@@ -20,6 +20,15 @@ jobs:
         wget -O stu-code.tar.gz.pgp $(cat url | tr -d '\r\n')
         echo "::set-output name=MD5::$(md5sum -t stu-code.tar.gz.pgp)"
         rm url
+    
+    - name: Get the PGP text
+      id: pgp-text
+      uses: actions/github-script@v6
+      with:
+        result-encoding: string
+        script: |
+          let fs = require('fs');
+          return fs.readFileSync('./stu-code.tar.gz.pgp', { encoding:'utf8', flag:'r' });
 
     - name: Checkout keys
       uses: actions/checkout@v3
@@ -96,7 +105,6 @@ jobs:
         script: |
           let fs = require('fs');
           return fs.readFileSync('./result.txt', { encoding:'utf8', flag:'r' });
-         
     - name: Feedback
       uses: peter-evans/create-or-update-comment@v2
       env:
@@ -119,11 +127,13 @@ jobs:
         TS: ${{ steps.timestamp.outputs.TS }}
         CHKSUM: ${{ steps.fetch-code.outputs.MD5 }}
         RESULT: ${{ steps.final-result.outputs.result }}
+        SUBMITTED: ${{ steps.pgp-text.outputs.result }}
       run: |
         echo "user=$USER" > score.txt
         echo "timestamp=$TS" >> score.txt
         echo "checksum=$CHKSUM" >> score.txt
         echo "result=$RESULT" >> score.txt
+        echo "submitted=$SUBMITTED" >> score.txt
         base64 score.txt > score.b64
         echo "::set-output name=B64::$(cat score.b64 | tr -d '\r\n')"
 
