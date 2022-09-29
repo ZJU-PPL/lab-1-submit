@@ -6,7 +6,7 @@ jobs:
    env:
      IMAGE_URL: https://github.com/waterlens/ppl-ocaml-env/raw/main/ppl-ocaml-env.tar.zstd
      IMAGE_PATH: ./ppl-ocaml-env.tar.zstd
-     CACHE_KEY: ppl-ocaml-env-zstd
+     CACHE_KEY: ppl-ocaml-env-zstd-20220929
    steps:
     - uses: actions/cache@v3
       id: cache-env
