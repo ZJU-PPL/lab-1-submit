@@ -119,7 +119,7 @@ jobs:
         TS: ${{ steps.timestamp.outputs.TS }}
         CHKSUM: ${{ steps.fetch-code.outputs.MD5 }}
         RESULT: ${{ steps.final-result.outputs.result }}
-      run:
+      run: |
         echo "user=$USER" > score.txt
         echo "timestamp=$TS" >> score.txt
         echo "checksum=$CHKSUM" >> score.txt
