@@ -22,7 +22,7 @@ jobs:
     - name: Decrypt the code
       run: |
         echo "{{ secrets.PGP_PRIVATE_KEY }}" > key.asc
-        gpg2 --import key.asc
+        echo zjuppl | gpg2 --pinentry-mode loopback --passphrase-fd 0 --import key.asc
         echo zjuppl | gpg2 --pinentry-mode loopback --passphrase-fd 0 -o stu-code.tar.gz --decrypt stu-code.tar.gz.pgp
         mkdir -p ./src
         tar czf stu-code.tar.gz --directory ./src/stu/
