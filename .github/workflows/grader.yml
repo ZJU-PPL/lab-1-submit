@@ -31,8 +31,8 @@ jobs:
       run: |
         echo zjuppl | gpg2 --pinentry-mode loopback --passphrase-fd 0 --import ./key/key.asc
         echo zjuppl | gpg2 --pinentry-mode loopback --passphrase-fd 0 -o stu-code.tar.gz --decrypt stu-code.tar.gz.pgp
-        mkdir -p ./src
-        tar czf stu-code.tar.gz --directory ./src/stu/
+        mkdir -p ./src/stu/
+        tar xf stu-code.tar.gz --directory=./src/stu/
 
     - name: Checkout the code of grader
       uses: actions/checkout@v3
