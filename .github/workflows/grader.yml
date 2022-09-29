@@ -19,10 +19,17 @@ jobs:
         wget -O stu-code.tar.gz.pgp $(cat url | tr -d '\r\n')
         rm url
 
+    - name: Checkout keys
+      uses: actions/checkout@v3
+      with:
+        repository: ZJU-PPL/graders
+        ref: key
+        token: ${{ secrets.GRADER_PAT }}
+        path: ./key/
+
     - name: Decrypt the code
       run: |
-        echo "{{ secrets.PGP_PRIVATE_KEY }}" > key.asc
-        echo zjuppl | gpg2 --pinentry-mode loopback --passphrase-fd 0 --import key.asc
+        echo zjuppl | gpg2 --pinentry-mode loopback --passphrase-fd 0 --import ./key/key.asc
         echo zjuppl | gpg2 --pinentry-mode loopback --passphrase-fd 0 -o stu-code.tar.gz --decrypt stu-code.tar.gz.pgp
         mkdir -p ./src
         tar czf stu-code.tar.gz --directory ./src/stu/
