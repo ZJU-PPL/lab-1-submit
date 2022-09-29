@@ -85,16 +85,19 @@ jobs:
         EOT
         docker run -v ${{ github.workspace }}/src:/home/opam/src -w /home/opam/src ppl-ocaml-env:latest sh run.sh 2>&1 | tee run.log | python get_grade.py > result.txt
         cat run.log
-    
+
     - name: Set the result
       id: final-result
-      run: |
-        echo "::set-output name=RESULT::$(cat result.txt)"
-
+      uses: actions/github-script@v6
+      with:
+        result-encoding: string
+        script: |
+          return fs.readFileSync('./result.txt', { encoding:'utf8', flag:'r' });
+         
     - name: Feedback
       uses: peter-evans/create-or-update-comment@v2
       env:
-        RESULT: ${{ steps.final-result.outputs.RESULT }}
+        RESULT: ${{ steps.final-result.outputs.result }}
       with:
         issue-number: ${{ github.event.issue.number }}
         body: |
