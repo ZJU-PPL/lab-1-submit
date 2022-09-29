@@ -72,14 +72,6 @@ jobs:
     
     - name: Run the grader
       id: grade-result
-      run:
-        docker run -v ${{ github.workspace }}/src:/home/opam/src -w /home/opam/src ppl-ocaml-env:latest sh run.sh > result.log
-        echo "::set-output name=RESULT::$(cat result.log)"
-    
-    - name: Filter the result
-      id: final-result
-      env:
-        RESULT: ${{ steps.grade-result.outputs.RESULT }}
       run: |
         cat <<EOT > get_grade.py
         import sys
@@ -91,8 +83,13 @@ jobs:
             if found:
                 print(line.rstrip('\r\n'))
         EOT
-        echo "$RESULT"  | python get_grade.py > result.txt
-        echo "::set-output name=RESULT::$(cat result.txt | tr -d '\r\n')"
+        docker run -v ${{ github.workspace }}/src:/home/opam/src -w /home/opam/src ppl-ocaml-env:latest sh run.sh 2>&1 | tee run.log | python get_grade.py > result.txt
+        cat run.log
+    
+    - name: Set the result
+      id: final-result
+      run: |
+        echo "::set-output name=RESULT::$(cat result.txt)"
 
     - name: Feedback
       uses: peter-evans/create-or-update-comment@v2
