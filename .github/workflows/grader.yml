@@ -106,5 +106,32 @@ jobs:
           ```
           ${{ env.RESULT }}
           ```
-          
-        
+    - name: Get current timestamp
+      id: timestamp
+      run: echo "::set-output name=TS::$(date -u +'%Y-%m-%d_%H-%M-%S_%s')"
+
+    - name: Encode the score
+      id: encode
+      env:
+        USER: ${{ github.event.issue.user.login }}
+        TS: ${{ steps.timestamp.outputs.TS }}
+        RESULT: ${{ steps.final-result.outputs.result }}
+      run:
+        echo "user=$USER" > score.txt
+        echo "timestamp=$TS" >> score.txt
+        echo "content=$RESULT" >> score.txt
+        base64 score.txt > score.b64
+        echo "::set-output name=B64::$(cat score.b64 | tr -d '\r\n')"
+
+    - name: Archive the score
+      env:
+        USER: ${{ github.event.issue.user.login }}
+        TS: ${{ steps.timestamp.outputs.TS }}
+        CONTENT: ${{ steps.encode.outputs.B64 }}
+      run: |
+        curl \
+          -X PUT \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.ARCHIVER_PAT }}" \
+          https://api.github.com/repos/ZJU-PPL/lab-1-scores/contents/$TS.$USER.log \
+          -d '{ "message": "score archiver", "committer": { "name": "bot", "email": "bot@bot.org" }, "content": "$CONTENT" }'
