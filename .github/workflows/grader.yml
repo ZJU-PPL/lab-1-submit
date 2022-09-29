@@ -13,7 +13,7 @@ jobs:
     - name: Get the code submitted
       env:
         TITLE: ${{ github.event.issue.title }}
-        CONTENT: ${{ github.event.issue.content }}
+        CONTENT: ${{ github.event.issue.body }}
       run: |
         echo "$CONTENT"  | sed -r -n "s/\[.*\]\((.*)\)/\1/p" > url
         wget -O stu-code.tar.gz.pgp $(cat url)
