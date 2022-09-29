@@ -11,12 +11,14 @@ jobs:
     CACHE_KEY: ppl-ocaml-env-zstd-20220929
    steps:
     - name: Get the code submitted
+      id: fetch-code
       env:
         TITLE: ${{ github.event.issue.title }}
         CONTENT: ${{ github.event.issue.body }}
       run: |
         echo "$CONTENT"  | sed -r -n "s/\[.*\]\((.*)\)/\1/p" > url
         wget -O stu-code.tar.gz.pgp $(cat url | tr -d '\r\n')
+        echo "::set-output name=MD5::$(md5sum -b stu-code.tar.gz.pgp)"
         rm url
 
     - name: Checkout keys
@@ -115,11 +117,13 @@ jobs:
       env:
         USER: ${{ github.event.issue.user.login }}
         TS: ${{ steps.timestamp.outputs.TS }}
+        CHKSUM: ${{ steps.fetch-code.outputs.MD5 }}
         RESULT: ${{ steps.final-result.outputs.result }}
       run:
         echo "user=$USER" > score.txt
         echo "timestamp=$TS" >> score.txt
-        echo "content=$RESULT" >> score.txt
+        echo "checksum=$CHKSUM" >> score.txt
+        echo "result=$RESULT" >> score.txt
         base64 score.txt > score.b64
         echo "::set-output name=B64::$(cat score.b64 | tr -d '\r\n')"
 
@@ -133,5 +137,5 @@ jobs:
           -X PUT \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.ARCHIVER_PAT }}" \
-          https://api.github.com/repos/ZJU-PPL/lab-1-scores/contents/$TS.$USER.log \
+          https://api.github.com/repos/ZJU-PPL/scores/contents/lab-1.$TS.$USER.log \
           -d '{ "message": "score archiver", "committer": { "name": "bot", "email": "bot@bot.org" }, "content": "$CONTENT" }'
