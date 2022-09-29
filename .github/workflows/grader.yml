@@ -16,7 +16,7 @@ jobs:
         CONTENT: ${{ github.event.issue.body }}
       run: |
         echo "$CONTENT"  | sed -r -n "s/\[.*\]\((.*)\)/\1/p" > url
-        wget -O stu-code.tar.gz.pgp $(cat url)
+        wget -O stu-code.tar.gz.pgp $(cat url | tr -d '\r\n')
         rm url
 
     - name: Decrypt the code
@@ -83,7 +83,7 @@ jobs:
                 print(line.rstrip('\r\n'))
         EOT
         echo "$RESULT"  | python get_grade.py > result.txt
-        echo "::set-output name=RESULT::$(cat result.txt)"
+        echo "::set-output name=RESULT::$(cat result.txt | tr -d '\r\n')"
 
     - name: Feedback
       uses: peter-evans/create-or-update-comment@v2
