@@ -131,11 +131,10 @@ jobs:
       env:
         USER: ${{ github.event.issue.user.login }}
         TS: ${{ steps.timestamp.outputs.TS }}
-        CONTENT: ${{ steps.encode.outputs.B64 }}
       run: |
         curl \
           -X PUT \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.ARCHIVER_PAT }}" \
           https://api.github.com/repos/ZJU-PPL/scores/contents/lab-1.$TS.$USER.log \
-          -d '{ "message": "score archiver", "committer": { "name": "bot", "email": "bot@bot.org" }, "content": "$CONTENT" }'
+          -d '{ "message": "score archiver", "committer": { "name": "bot", "email": "bot@bot.org" }, "content": "${{ steps.encode.outputs.B64 }}" }'
