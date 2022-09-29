@@ -72,7 +72,9 @@ jobs:
     
     - name: Run the grader
       id: grade-result
-      run: echo "::set-output name=RESULT::$(docker run -v ${{ github.workspace }}/src:/home/opam/src -w /home/opam/src ppl-ocaml-env:latest sh run.sh)"
+      run:
+        docker run -v ${{ github.workspace }}/src:/home/opam/src -w /home/opam/src ppl-ocaml-env:latest sh run.sh > result.log
+        echo "::set-output name=RESULT::$(cat result.log)"
     
     - name: Filter the result
       id: final-result
