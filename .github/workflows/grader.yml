@@ -18,7 +18,7 @@ jobs:
       run: |
         echo "$CONTENT"  | sed -r -n "s/\[.*\]\((.*)\)/\1/p" > url
         wget -O stu-code.tar.gz.pgp $(cat url | tr -d '\r\n')
-        echo "::set-output name=MD5::$(md5sum -b stu-code.tar.gz.pgp)"
+        echo "::set-output name=MD5::$(md5sum -t stu-code.tar.gz.pgp)"
         rm url
 
     - name: Checkout keys
