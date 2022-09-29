@@ -92,6 +92,7 @@ jobs:
       with:
         result-encoding: string
         script: |
+          let fs = require('fs');
           return fs.readFileSync('./result.txt', { encoding:'utf8', flag:'r' });
          
     - name: Feedback
