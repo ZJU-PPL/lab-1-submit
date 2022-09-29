@@ -1,0 +1,100 @@
+name: grader
+on:
+  issues:
+    types: [opened, edited]
+jobs:
+  grade:
+   runs-on: ubuntu-22.04
+   env:
+    IMAGE_URL: https://github.com/waterlens/ppl-ocaml-env/raw/main/ppl-ocaml-env.tar.zstd
+    IMAGE_PATH: ./ppl-ocaml-env.tar.zstd
+    CACHE_KEY: ppl-ocaml-env-zstd
+   steps:
+    - name: Get the code submitted
+      env:
+        TITLE: ${{ github.event.issue.title }}
+        CONTENT: ${{ github.event.issue.content }}
+      run: |
+        echo "$CONTENT"  | sed -r -n "s/\[.*\]\((.*)\)/\1/p" > url
+        wget -O stu-code.tar.gz.pgp $(cat url)
+        rm url
+
+    - name: Decrypt the code
+      run: |
+        echo "{{ secrets.PGP_PRIVATE_KEY }}" > key.asc
+        gpg2 --import key.asc
+        echo zjuppl | gpg2 --pinentry-mode loopback --passphrase-fd 0 -o stu-code.tar.gz --decrypt stu-code.tar.gz.pgp
+        mkdir -p ./src
+        tar czf stu-code.tar.gz --directory ./src/stu/
+
+    - name: Checkout the code of grader
+      uses: actions/checkout@v3
+      with:
+        repository: ZJU-PPL/graders
+        ref: lab-1
+        token: ${{ secrets.GRADER_PAT }}
+        path: ./src/grader/
+
+    - name: Make test script
+      run: |
+        cat <<EOT > run.sh
+        cp -r ./ ../work
+        cd ../work
+        cd ./stu
+        opam install . -y
+        cd ..
+        cd ./grader
+        timeout 10s dune exec grader
+        EOT
+        chmod +x run.sh
+        mv run.sh ./src/run.sh
+
+    - name: Try to use cache
+      uses: actions/cache@v3
+      id: cache-env
+      with:
+        key: ${{ env.CACHE_KEY }}
+        path: ${{ env.IMAGE_PATH }}
+
+    - name: Fetch test image
+      if: ${{ steps.cache-env.outputs.cache-hit != 'true' }}
+      run: wget -O ${{ env.IMAGE_PATH }} ${{ env.IMAGE_URL }}
+
+    - name: Import test image
+      run: zstd -d -c ${{ env.IMAGE_PATH }} | docker load
+    
+    - name: Run the grader
+      id: grade-result
+      run: echo "::set-output name=RESULT::$(docker run -v ${{ github.workspace }}/src:/home/opam/src -w /home/opam/src ppl-ocaml-env:latest sh run.sh)"
+    
+    - name: Filter the result
+      id: final-result
+      env:
+        RESULT: ${{ steps.grade-result.outputs.RESULT }}
+      run: |
+        cat <<EOT > get_grade.py
+        import sys
+        found = False
+        for line in sys.stdin:
+            if line.rstrip('\r\n') == '===':
+                found = not found
+                continue
+            if found:
+                print(line.rstrip('\r\n'))
+        EOT
+        echo "$RESULT"  | python get_grade.py > result.txt
+        echo "::set-output name=RESULT::$(cat result.txt)"
+
+    - name: Feedback
+      uses: peter-evans/create-or-update-comment@v2
+      env:
+        RESULT: ${{ steps.final-result.outputs.RESULT }}
+      with:
+        issue-number: ${{ github.event.issue.number }}
+        body: |
+          This is the test report of your code
+          ```
+          ${{ env.RESULT }}
+          ```
+          
+        
