@@ -81,7 +81,10 @@ jobs:
         wget -O ${{ env.COMPACTED_IMAGE_PATH }} ${{ env.COMPACTED_IMAGE_URL }}
 
     - name: Import test image
-      run: lz4 -d -c ${{ env.COMPACTED_IMAGE_PATH }} | docker load
+      run: |
+        wget -O ./lz4 https://github.com/waterlens/ppl-ocaml-env/raw/main/utils/lz4 
+        chmod +x ./lz4
+        ./lz4 -d -c ${{ env.COMPACTED_IMAGE_PATH }} | docker load
     
     - name: Run the grader
       id: grade-result
