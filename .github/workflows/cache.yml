@@ -4,18 +4,17 @@ jobs:
   cache:
     runs-on: ubuntu-22.04
     env:
-      CACHE_KEY: ppl-ocaml-env-20220930
+      CACHE_KEY: ppl-ocaml-env-lz4-20220930
       IMAGE_PATH: ./ppl-ocaml-env.tar
-      COMPACTED_IMAGE_PATH: ./ppl-ocaml-env.tar.zstd
-      COMPACTED_IMAGE_URL: https://github.com/waterlens/ppl-ocaml-env/raw/main/ppl-ocaml-env.tar.zstd
+      COMPACTED_IMAGE_PATH: ./ppl-ocaml-env.tar.lz4
+      COMPACTED_IMAGE_URL: https://github.com/waterlens/ppl-ocaml-env/raw/main/ppl-ocaml-env.tar.lz4
     steps:
       - uses: actions/cache@v3
-        id: cache-raw-env
+        id: cache-env
         with:
           key: ${{ env.CACHE_KEY }}
-          path: ${{ env.IMAGE_PATH }}
+          path: ${{ env.COMPACTED_IMAGE_PATH }}
 
-      - if: ${{ steps.cache-raw-env.outputs.cache-hit != 'true' }}
+      - if: ${{ steps.cache-env.outputs.cache-hit != 'true' }}
         run: |
           wget -O ${{ env.COMPACTED_IMAGE_PATH }} ${{ env.COMPACTED_IMAGE_URL }}
-          zstd -d -o ${{ env.IMAGE_PATH }} ${{ env.COMPACTED_IMAGE_PATH }} 
