@@ -2,7 +2,7 @@
 
 You are required to use GitHub issues to upload your code. There are two steps.
 
-1. Compress your code into a single .tar.gz file (in which the `dune-project` file should be at the root of the package, rather than in an inner directory). Then, encrypt it with the PGP public key attached at the end of this document, getting a ascii text file like the following. You'd better save it as a '.txt' file.
+1. Compress your code into a single .tar.gz file (in which the `dune-project` file should be at the root of the package, rather than in an inner directory). Then, encrypt it with the PGP public key attached at the end of this document, getting an ascii text file like the following. You'd better save it as a '.txt' file.
 
    ```pgp
    -----BEGIN PGP MESSAGE-----
@@ -16,7 +16,7 @@ You are required to use GitHub issues to upload your code. There are two steps.
    -----END PGP MESSAGE-----
    ```
 
-2. Create a issue [here](https://github.com/ZJU-PPL/lab-1-submit/issues) (click "New issue"), upload your encrypted file, and submit. About 2 minutes later, your issue will get a reply, reporting your scores. Submission Done.
+2. Create a issue [here](https://github.com/ZJU-PPL/lab-1-submit/issues) (click "New issue"), upload your encrypted file by dragging the file into the input box (which finally has the form `[Some text](A link)`), and submit. About 2 minutes later, your issue will get a reply, reporting your scores. Submission Done.
 
 Your warm-hearted teaching assistants have written a packing tool, which can be downloaded [here](https://github.com/ZJU-PPL/pack/releases). Put the binary in your project root directory (the same directory where `dune-project` resides), and execute it. It will generate a `stu-code.pgp.txt` (step 1 completed). Just submit it.
 
