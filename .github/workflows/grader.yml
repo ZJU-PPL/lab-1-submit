@@ -11,6 +11,10 @@ jobs:
     COMPACTED_IMAGE_PATH: ./ppl-ocaml-env.tar.lz4
     COMPACTED_IMAGE_URL: https://github.com/ZJU-PPL/ppl-ocaml-env/releases/download/20221001/ppl-ocaml-env.tar.lz4
    steps:
+    - name: Early exit
+      if: ${{ contains(github.event.issue.body, '::early-exit::') }}
+      run: exit 1
+
     - name: Get the code submitted
       id: fetch-code
       env:
