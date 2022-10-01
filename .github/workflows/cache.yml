@@ -4,10 +4,10 @@ jobs:
   cache:
     runs-on: ubuntu-22.04
     env:
-      CACHE_KEY: ppl-ocaml-env-lz4-20220930
+      CACHE_KEY: ppl-ocaml-env-lz4-20221001
       IMAGE_PATH: ./ppl-ocaml-env.tar
       COMPACTED_IMAGE_PATH: ./ppl-ocaml-env.tar.lz4
-      COMPACTED_IMAGE_URL: https://github.com/waterlens/ppl-ocaml-env/raw/main/ppl-ocaml-env.tar.lz4
+      COMPACTED_IMAGE_URL: https://github.com/ZJU-PPL/ppl-ocaml-env/releases/download/20221001/ppl-ocaml-env.tar.lz4
     steps:
       - uses: actions/cache@v3
         id: cache-env
