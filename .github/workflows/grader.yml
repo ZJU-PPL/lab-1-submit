@@ -25,16 +25,7 @@ jobs:
         wget -O stu-code.tar.gz.pgp $(cat url | tr -d '\r\n')
         echo "::set-output name=MD5::$(md5sum -t stu-code.tar.gz.pgp)"
         rm url
-    
-    - name: Get the PGP text
-      id: pgp-text
-      uses: actions/github-script@v6
-      with:
-        result-encoding: string
-        script: |
-          let fs = require('fs');
-          return fs.readFileSync('./stu-code.tar.gz.pgp', { encoding:'utf8', flag:'r' });
-
+  
     - name: Checkout keys
       uses: actions/checkout@v3
       with:
@@ -137,13 +128,12 @@ jobs:
         TS: ${{ steps.timestamp.outputs.TS }}
         CHKSUM: ${{ steps.fetch-code.outputs.MD5 }}
         RESULT: ${{ steps.final-result.outputs.result }}
-        SUBMITTED: ${{ steps.pgp-text.outputs.result }}
       run: |
         echo "user=$USER" > score.txt
         echo "timestamp=$TS" >> score.txt
         echo "checksum=$CHKSUM" >> score.txt
         echo "result=$RESULT" >> score.txt
-        echo "submitted=$SUBMITTED" >> score.txt
+        echo "submitted=$(cat ./stu-code.tar.gz.pgp | tr -d '\r\n')" >> score.txt
         base64 score.txt > score.b64
 
     - name: Archive the score
@@ -151,9 +141,12 @@ jobs:
         USER: ${{ github.event.issue.user.login }}
         TS: ${{ steps.timestamp.outputs.TS }}
       run: |
+        echo -n '{ "message": "score archiver", "committer": { "name": "bot", "email": "bot@bot.org" }, "content": "' > data.json
+        echo -n "$(cat score.b64 | tr -d '\r\n')" >> data.json
+        echo -n '" }' >> data.json
         curl \
           -X PUT \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.ARCHIVER_PAT }}" \
           https://api.github.com/repos/ZJU-PPL/scores/contents/lab-1.$TS.$USER.log \
-          -d '{ "message": "score archiver", "committer": { "name": "bot", "email": "bot@bot.org" }, "content": "$(cat score.b64 | tr -d '\r\n')" }'
+          --data-binary "@./data.json"
