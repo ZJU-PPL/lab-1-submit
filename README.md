@@ -18,6 +18,8 @@ You are required to use GitHub issues to upload your code. There are two steps.
 
 2. Create a issue [here](https://github.com/ZJU-PPL/lab-1-submit/issues) (click "New issue"), upload your encrypted file by dragging the file into the input box (which finally has the form `[Some text](A link)`), and submit. About 2 minutes later, your issue will get a reply, reporting your scores. Submission Done.
 
+If you want to submit again, you can just edit your issue, delete the old file and upload a new one, instead of creating a new issue.
+
 Your warm-hearted teaching assistants have written a packing tool, which can be downloaded [here](https://github.com/ZJU-PPL/pack/releases). Put the binary in your project root directory (the same directory where `dune-project` resides), and execute it. It will generate a `stu-code.pgp.txt` (step 1 completed). Just submit it.
 
 Warnings:
@@ -49,6 +51,8 @@ Warnings:
    ```
 
 2. 在本仓库的 Issue 中[新建一个 issue](https://github.com/ZJU-PPL/lab-1-submit/issues/new)（自己起一个能辨识的名字），将上面得到的文本文件拖进去上传。上传成功后你就会看到一段形如 `[一些文本](一个链接)` 的东西出现在内容框里，这时直接提交就行了。两分钟后，你的 issue 下面就会收到评测结果。这样就完成了提交。
+
+如果你想多次提交，可以直接编辑你的 issue，把旧的文件删掉，上传新的文件，然后保存。评测会再次进行。没有必要重新开一个 issue。
 
 贴心的助教为大家写了打包程序，可以在[这里](https://github.com/ZJU-PPL/pack/releases)下载。把拿到的打包程序放在项目根目录下（跟 `dune-project` 文件在同一个目录下），执行它，就能得到 `stu-code.pgp.txt`（一键完成第一步）。提交它就行了。
 
