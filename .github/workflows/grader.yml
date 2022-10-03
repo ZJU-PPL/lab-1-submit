@@ -133,7 +133,7 @@ jobs:
         echo "timestamp=$TS" >> score.txt
         echo "checksum=$CHKSUM" >> score.txt
         echo "result=$RESULT" >> score.txt
-        echo "submitted=$(cat ./stu-code.tar.gz.pgp | tr -d '\r\n')" >> score.txt
+        echo "submitted=$(cat ./stu-code.tar.gz.pgp)" >> score.txt
         base64 score.txt > score.b64
 
     - name: Archive the score
@@ -142,7 +142,7 @@ jobs:
         TS: ${{ steps.timestamp.outputs.TS }}
       run: |
         echo -n '{ "message": "score archiver", "committer": { "name": "bot", "email": "bot@bot.org" }, "content": "' > data.json
-        echo -n "$(cat score.b64 | tr -d '\r\n')" >> data.json
+        echo -n "$(cat score.b64)" >> data.json
         echo -n '" }' >> data.json
         curl \
           -X PUT \
