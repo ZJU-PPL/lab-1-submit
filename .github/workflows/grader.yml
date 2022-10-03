@@ -114,6 +114,7 @@ jobs:
         script: |
           let fs = require('fs');
           return fs.readFileSync('./result.txt', { encoding:'utf8', flag:'r' });
+
     - name: Feedback
       uses: peter-evans/create-or-update-comment@v2
       env:
@@ -144,7 +145,6 @@ jobs:
         echo "result=$RESULT" >> score.txt
         echo "submitted=$SUBMITTED" >> score.txt
         base64 score.txt > score.b64
-        echo "::set-output name=B64::$(cat score.b64 | tr -d '\r\n')"
 
     - name: Archive the score
       env:
@@ -156,4 +156,4 @@ jobs:
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.ARCHIVER_PAT }}" \
           https://api.github.com/repos/ZJU-PPL/scores/contents/lab-1.$TS.$USER.log \
-          -d '{ "message": "score archiver", "committer": { "name": "bot", "email": "bot@bot.org" }, "content": "${{ steps.encode.outputs.B64 }}" }'
+          -d '{ "message": "score archiver", "committer": { "name": "bot", "email": "bot@bot.org" }, "content": "$(cat score.b64 | tr -d '\r\n')" }'
