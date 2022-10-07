@@ -96,6 +96,7 @@ jobs:
         EOT
         docker run -v ${{ github.workspace }}/src:/home/opam/src -w /home/opam/src ppl-ocaml-env:latest sh run.sh 2>&1 | tee run.log | python get_grade.py > result.txt
         cat run.log
+        grep -F -x -q '===' run.log
 
     - name: Set the result
       id: final-result
